@@ -105,7 +105,7 @@ class GitHubManager:
             data = {
                 "reviewers": self.reviewers
             }
-            url = "https://api.github.com/repos/{1}/pulls/{2}/requested_reviewers".format(
+            url = "https://api.github.com/repos/{0}/pulls/{1}/requested_reviewers".format(
                 self.github_repo_key, json["number"])
 
             result = requests.post(url, json=data, headers=headers)

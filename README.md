@@ -20,7 +20,7 @@ $ pip install -r requirements.txt
 Currently `pip` doesn't support freezing a module that has been installed from a GitHub repo. So if using the Linaro Vault, you will have to manually install the vault_auth module using:
 
 ```bash
-$ pip install git+https://github.com/linaro-its/vault_auth.gits
+$ pip install git+https://github.com/linaro-its/vault_auth.git
 ```
 
 Modify the examples/test.py with your parameters:

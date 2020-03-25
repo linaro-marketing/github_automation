@@ -18,7 +18,7 @@ class GitHubManager:
         self.reviewers = reviewers
         self.repo_output_name = "website"
         self.repo_dir = "{}/{}".format(self.working_dir, self.repo_output_name)
-        self.repo = self.clone_repo()
+        self.repo = self.setup_repo()
 
     def run_command(self, command):
         result = subprocess.run(
@@ -46,25 +46,12 @@ class GitHubManager:
         if in_repo_directory:
             os.chdir(self.app_dir)
 
-    def commit_and_push(self, commit_message):
-        # Only use run_git_command when we need the SSH key involved.
-        self.run_repo_command("git add --all")
-        self.run_repo_command(
-            "git commit -m {}".format(self.repo.active_branch.name))
-        self.run_git_command(
-            "git push --set-upstream origin {}".format(self.repo.active_branch.name))
-
-    def create_branch(self, branch_name):
-        # Name the branch after the date and time
-        #
-        branch = self.repo.create_head(branch_name)
-        branch.checkout()
-        print("Checked out {}".format(branch_name))
-
-    def clone_repo(self):
+    def setup_repo(self):
         """Clones or pulls the repo specified in the constructor"""
         if os.path.isdir(self.repo_dir):
             print("Pulling repository...")
+            # Ensure we are on the master branch first
+            self.repo.git.checkout("master")
             self.run_git_command("git pull")
         else:
             # Make sure we are in the working directory
@@ -76,10 +63,23 @@ class GitHubManager:
                     self.github_repo_key), in_repo_directory=False)
             os.chdir(self.app_dir)
 
+        self.run_git_command("git checkout master")
+
         return Repo(self.repo_dir)
 
-    def create_github_pull_request(self, title, body):
+    def create_github_pull_request(self, branch_name, title, body):
         """ Create a GitHub pull request with the latest Connect Jekyll posts"""
+
+        branch = self.repo.create_head(branch_name)
+        branch.checkout()
+        print("Checked out {}".format(branch_name))
+
+        # Only use run_git_command when we need the SSH key involved.
+        self.run_repo_command("git add --all")
+        self.run_repo_command(
+            "git commit -m 'Session update for {}'".format(self.repo.active_branch.name))
+        self.run_git_command(
+            "git push --set-upstream origin {}".format(self.repo.active_branch.name))
 
         data = {
             "title": title,
@@ -112,6 +112,10 @@ class GitHubManager:
                 print("ERROR: Failed to add reviewers to the pull request")
                 print(result.text)
                 self.error = True
+
+        self.run_git_command("git checkout master")
+        self.run_git_command("git branch -D {}".format(branch_name))
+
 
 if __name__ == "__main__":
     gh_man = GitHubManager()

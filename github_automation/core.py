@@ -51,7 +51,7 @@ class GitHubManager:
         if os.path.isdir(self.repo_dir):
             print("Pulling repository...")
             # Ensure we are on the master branch first
-            self.repo.git.checkout("master")
+            self.run_git_command("git checkout master")
             self.run_git_command("git pull")
         else:
             # Make sure we are in the working directory
@@ -70,8 +70,7 @@ class GitHubManager:
     def create_github_pull_request(self, branch_name, title, body):
         """ Create a GitHub pull request with the latest Connect Jekyll posts"""
 
-        branch = self.repo.create_head(branch_name)
-        branch.checkout()
+        self.run_git_command("git checkout -b {}".format(branch_name))
         print("Checked out {}".format(branch_name))
 
         # Only use run_git_command when we need the SSH key involved.

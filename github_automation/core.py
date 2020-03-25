@@ -4,8 +4,6 @@ import os
 import subprocess
 from datetime import datetime, timezone
 import requests
-
-
 class GitHubManager:
 
     def __init__(self, repo_url, working_directory, app_directory, path_to_ssh_key, auth_token, reviewers):
@@ -67,7 +65,7 @@ class GitHubManager:
         """Clones or pulls the repo specified in the constructor"""
         if os.path.isdir(self.repo_dir):
             print("Pulling repository...")
-            self.run_repo_command("git pull")
+            self.run_git_command("git pull")
         else:
             # Make sure we are in the working directory
             os.chdir(self.working_dir)
@@ -114,7 +112,6 @@ class GitHubManager:
                 print("ERROR: Failed to add reviewers to the pull request")
                 print(result.text)
                 self.error = True
-
 
 if __name__ == "__main__":
     gh_man = GitHubManager()

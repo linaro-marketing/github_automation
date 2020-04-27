@@ -96,6 +96,7 @@ class GitHubManager:
             print("ERROR: Failed to create pull request")
             print(result.text)
             self.error = True
+            return False
         else:
             json = result.json()
             print("Pull request created: {}".format(json["html_url"]))
@@ -111,9 +112,12 @@ class GitHubManager:
                 print("ERROR: Failed to add reviewers to the pull request")
                 print(result.text)
                 self.error = True
-
+                return False
         self.run_git_command("git checkout master")
         self.run_git_command("git branch -D {}".format(branch_name))
+
+        return True
+
 
 
 if __name__ == "__main__":

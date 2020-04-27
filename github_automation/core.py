@@ -5,7 +5,6 @@ import os
 import subprocess
 from datetime import datetime, timezone
 import requests
-import sys
 class GitHubManager:
 
     def __init__(self, repo_url, working_directory, app_directory, path_to_ssh_key, auth_token, reviewers):

@@ -1,3 +1,4 @@
+import sys
 from git import Repo
 import vault_auth
 import os

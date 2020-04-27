@@ -4,6 +4,7 @@ import os
 import subprocess
 from datetime import datetime, timezone
 import requests
+import sys
 class GitHubManager:
 
     def __init__(self, repo_url, working_directory, app_directory, path_to_ssh_key, auth_token, reviewers):
@@ -28,6 +29,7 @@ class GitHubManager:
             print("ERROR: '%s'" % command)
             print(result.stdout.decode("utf-8"))
             print(result.stderr.decode("utf-8"))
+            sys.exit(result.returncode)
 
     def run_repo_command(self, command):
         """Runs a command inside the repo directory"""

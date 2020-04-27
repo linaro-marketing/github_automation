@@ -7,12 +7,11 @@ from datetime import datetime, timezone
 import requests
 class GitHubManager:
 
-    def __init__(self, repo_url, working_directory, app_directory, path_to_ssh_key, auth_token, reviewers):
+    def __init__(self, repo_url, working_directory, path_to_ssh_key, auth_token, reviewers):
 
         self.github_repo = repo_url
         self.github_repo_key = self.github_repo.lstrip("https://github.com/")
         self.working_dir = working_directory
-        self.app_dir = app_directory
         self.ssh_key_path = path_to_ssh_key
         self.auth_token = auth_token
         self.error = False
@@ -35,7 +34,7 @@ class GitHubManager:
         """Runs a command inside the repo directory"""
         os.chdir(self.repo_dir)
         self.run_command(command)
-        os.chdir(self.app_dir)
+        os.chdir(self.working_dir)
 
     def run_git_command(self, command, in_repo_directory=True):
         """ Run a git command on the repo """
@@ -46,7 +45,7 @@ class GitHubManager:
         print("running {}".format(full_cmd))
         self.run_command(full_cmd)
         if in_repo_directory:
-            os.chdir(self.app_dir)
+            os.chdir(self.working_dir)
 
     def setup_repo(self):
         """Clones or pulls the repo specified in the constructor"""
@@ -63,7 +62,7 @@ class GitHubManager:
             self.run_git_command(
                 "git clone git@github.com:{}.git website".format(
                     self.github_repo_key), in_repo_directory=False)
-            os.chdir(self.app_dir)
+            os.chdir(self.working_dir)
 
         self.run_git_command("git checkout master")
 
@@ -119,8 +118,3 @@ class GitHubManager:
         self.run_git_command("git branch -D {}".format(branch_name))
 
         return True
-
-
-
-if __name__ == "__main__":
-    gh_man = GitHubManager()

@@ -63,11 +63,9 @@ class GitHubManager:
                     self.github_repo_key), in_repo_directory=False)
             os.chdir(self.working_dir)
         repo = Repo(self.repo_dir)
-        try:
-            repo.git.checkout(self.change_branch)
-        except repo.exec.GitCommandError:
+        self.run_git_command("git checkout {}".format(self.change_branch))
+        if repo.active_branch.name !== self.change_branch:
             self.run_git_command("git checkout -b {}".format(self.change_branch))
-
         return repo
 
     def create_github_pull_request(self, title, body):

@@ -53,9 +53,12 @@ class GitHubManager:
         if os.path.isdir(self.repo_dir):
             print("Pulling repository...")
             # Checkout the change_branch
-            self.run_git_command("git checkout {}".format(self.change_branch))
-            self.run_git_command("git pull")
             repo = Repo(self.repo_dir)
+            try:
+                repo.git.checkout(self.change_branch)
+            except repo.exc.GitCommandError:
+                self.run_git_command("git checkout -b {}".format(self.change_branch))
+            self.run_git_command("git pull")
         else:
             # Make sure we are in the working directory
             os.chdir(self.working_dir)

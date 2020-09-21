@@ -65,7 +65,7 @@ class GitHubManager:
         repo = Repo(self.repo_dir)
         try:
             repo.git.checkout(self.change_branch)
-        except repo.exc.GitCommandError:
+        except repo.exec.GitCommandError:
             self.run_git_command("git checkout -b {}".format(self.change_branch))
 
         return repo

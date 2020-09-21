@@ -52,7 +52,7 @@ class GitHubManager:
         """Clones or pulls the repo specified in the constructor"""
         if os.path.isdir(self.repo_dir):
             print("Pulling repository...")
-            # Ensure we are on the master branch first
+            # Checkout the change_branch
             self.run_git_command("git checkout {}".format(self.change_branch))
             self.run_git_command("git pull")
             repo = Repo(self.repo_dir)

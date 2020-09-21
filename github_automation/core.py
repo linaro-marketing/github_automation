@@ -7,9 +7,10 @@ from datetime import datetime, timezone
 import requests
 class GitHubManager:
 
-    def __init__(self, repo_url, working_directory, path_to_ssh_key, auth_token, reviewers):
+    def __init__(self, repo_url, working_directory, path_to_ssh_key, auth_token, reviewers, changes_branch_name):
 
         self.github_repo = repo_url
+        self.change_branch = changes_branch_name
         self.github_repo_key = self.github_repo.lstrip("https://github.com/")
         self.working_dir = working_directory
         self.ssh_key_path = path_to_ssh_key
@@ -52,8 +53,9 @@ class GitHubManager:
         if os.path.isdir(self.repo_dir):
             print("Pulling repository...")
             # Ensure we are on the master branch first
-            self.run_git_command("git checkout master")
+            self.run_git_command("git checkout {}".format(self.change_branch))
             self.run_git_command("git pull")
+            repo = Repo(self.repo_dir)
         else:
             # Make sure we are in the working directory
             os.chdir(self.working_dir)
@@ -63,17 +65,16 @@ class GitHubManager:
                 "git clone git@github.com:{}.git website".format(
                     self.github_repo_key), in_repo_directory=False)
             os.chdir(self.working_dir)
+            repo = Repo(self.repo_dir)
+            try:
+                repo.git.checkout(self.change_branch)
+            except repo.exc.GitCommandError:
+                self.run_git_command("git checkout -b {}".format(self.change_branch))
 
-        self.run_git_command("git checkout master")
+        return repo
 
-        return Repo(self.repo_dir)
-
-    def create_github_pull_request(self, branch_name, title, body):
+    def create_github_pull_request(self, title, body):
         """ Create a GitHub pull request with the latest Connect Jekyll posts"""
-
-        self.run_git_command("git checkout -b {}".format(branch_name))
-        print("Checked out {}".format(branch_name))
-
         # Only use run_git_command when we need the SSH key involved.
         self.run_repo_command("git add --all")
         self.run_repo_command(
@@ -114,7 +115,4 @@ class GitHubManager:
                 print(result.text)
                 self.error = True
                 return False
-        self.run_git_command("git checkout master")
-        self.run_git_command("git branch -D {}".format(branch_name))
-
         return True

@@ -52,10 +52,7 @@ class GitHubManager:
         """Clones or pulls the repo specified in the constructor"""
         if os.path.isdir(self.repo_dir):
             print("Pulling repository...")
-            # Ensure we are on the master branch first
-            self.run_git_command("git checkout {}".format(self.change_branch))
             self.run_git_command("git pull")
-            repo = Repo(self.repo_dir)
         else:
             # Make sure we are in the working directory
             os.chdir(self.working_dir)
@@ -65,11 +62,11 @@ class GitHubManager:
                 "git clone git@github.com:{}.git website".format(
                     self.github_repo_key), in_repo_directory=False)
             os.chdir(self.working_dir)
-            repo = Repo(self.repo_dir)
-            try:
-                repo.git.checkout(self.change_branch)
-            except repo.exc.GitCommandError:
-                self.run_git_command("git checkout -b {}".format(self.change_branch))
+        repo = Repo(self.repo_dir)
+        try:
+            repo.git.checkout(self.change_branch)
+        except repo.exc.GitCommandError:
+            self.run_git_command("git checkout -b {}".format(self.change_branch))
 
         return repo
 

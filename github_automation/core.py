@@ -64,7 +64,7 @@ class GitHubManager:
             os.chdir(self.working_dir)
         repo = Repo(self.repo_dir)
         self.run_git_command("git checkout {}".format(self.change_branch))
-        if repo.active_branch.name !== self.change_branch:
+        if repo.active_branch.name != self.change_branch:
             self.run_git_command("git checkout -b {}".format(self.change_branch))
         return repo
 
